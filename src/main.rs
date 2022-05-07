@@ -71,7 +71,6 @@ impl EventHandler for Handler {
                     i+=1;
                     let mut current_param: String = String::new();
                     GetSpaceUntilString!(msg.content, i, current_param);
-                    println!("{}", current_param);
                     pixel_data[j] = match current_param.parse::<u8>(){
                         Ok(u8) => u8,
                         Err(u8) => {
