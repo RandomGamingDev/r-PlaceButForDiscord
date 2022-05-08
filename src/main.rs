@@ -74,13 +74,16 @@ impl EventHandler for Handler {
                     pixel_data[j] = match current_param.parse::<u8>(){
                         Ok(u8) => u8,
                         Err(u8) => {
-                            Send!("Invalid parameters for placement.", msg.channel_id, ctx);
+                            Send!("Invalid parameters for placement!", msg.channel_id, ctx);
                             return;
                         }
                     }
                 }
                 unsafe{
-                    if u32::from(pixel_data[0]) > DIMENSIONS[0] - 1 || u32::from(pixel_data[1]) > DIMENSIONS[1] - 1 { return; }
+                    if u32::from(pixel_data[0]) > DIMENSIONS[0] - 1 || u32::from(pixel_data[1]) > DIMENSIONS[1] - 1 {
+                        Send!("Parameters out of bound!", msg.channel_id, ctx);
+                        return; 
+                    }
                     *IMG.as_mut_rgb8().unwrap().get_pixel_mut(pixel_data[0].into(), pixel_data[1].into()) = image::Rgb([pixel_data[2], pixel_data[3], pixel_data[4]]);
                     IMG.save("place.png").unwrap();
                     SendImage!("place.png", msg.channel_id, ctx);
@@ -90,7 +93,7 @@ impl EventHandler for Handler {
                 SendImage!("place.png", msg.channel_id, ctx);
             }
             _ => {
-                Send!("Invalid Command", msg.channel_id, ctx);
+                Send!("Invalid Command!", msg.channel_id, ctx);
             }
         }
     }
