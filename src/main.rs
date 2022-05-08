@@ -80,6 +80,7 @@ impl EventHandler for Handler {
                     }
                 }
                 unsafe{
+                    if pixel_data[0] > 99 || pixel_data[1] > 99 { return; }
                     *IMG.as_mut_rgb8().unwrap().get_pixel_mut(pixel_data[0].into(), pixel_data[1].into()) = image::Rgb([pixel_data[2], pixel_data[3], pixel_data[4]]);
                     IMG.save("place.png").unwrap();
                     SendImage!("place.png", msg.channel_id, ctx);
