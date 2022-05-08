@@ -38,7 +38,7 @@ macro_rules! GetSpaceUntilString{
 macro_rules! SendImage{
     ($filepath:expr, $channel_id:expr, $ctx:expr)=>{
         {
-            $channel_id.send_files(&$ctx.http, vec!["place.png"], |m| m.content("a file")).await.unwrap();
+            $channel_id.send_files(&$ctx.http, vec![$filepath], |m| m.content($filepath)).await.unwrap();
         }
     }
 }
