@@ -6,6 +6,7 @@ use image::GenericImageView;
 use lazy_mut::lazy_mut;
 use substring;
 use substring::Substring;
+use serenity::prelude::GatewayIntents;
 
 use serenity::{
     async_trait,
@@ -55,7 +56,7 @@ struct Handler;
 impl EventHandler for Handler {
     async fn message(&self, ctx: Context, msg: Message) {
         if msg.content.chars().nth(0).unwrap() != '!' || 
-           msg.author.id == ctx.cache.current_user_id().await
+           msg.author.id == ctx.cache.current_user_id()
         { return; }
         let mut command: String = String::new();
         let mut i = 1;
@@ -84,7 +85,11 @@ impl EventHandler for Handler {
                         Send!("Parameters out of bound!", msg.channel_id, ctx);
                         return; 
                     }
-                    *IMG.as_mut_rgb8().unwrap().get_pixel_mut(pixel_data[0].into(), pixel_data[1].into()) = image::Rgb([pixel_data[2], pixel_data[3], pixel_data[4]]);
+                    *IMG
+                        .as_mut_rgb8()
+                        .unwrap()
+                        .get_pixel_mut(pixel_data[0].into(), pixel_data[1].into()) =
+                            image::Rgb([pixel_data[2], pixel_data[3], pixel_data[4]]);
                     IMG.save("place.png").unwrap();
                     SendImage!("place.png", msg.channel_id, ctx);
                 }
@@ -104,10 +109,11 @@ impl EventHandler for Handler {
 
 #[tokio::main]
 async fn main() {
-    let mut client: Client = Client::builder(
-            std::fs::read_to_string("token.txt")
-                        .expect("ERROR RETRIEVING TOKEN")
-            )
+    let token = std::fs::read_to_string("token.txt")
+                    .expect("ERROR RETRIEVING TOKEN");
+    let intents = GatewayIntents::GUILD_MESSAGES | GatewayIntents::DIRECT_MESSAGES | GatewayIntents::MESSAGE_CONTENT;
+
+    let mut client: Client = Client::builder(&token, intents)
             .event_handler(Handler)
             .await
             .expect("ERROR STARTING CLIENT EVENT HANDLER");
